@@ -1,36 +1,42 @@
 import React from "react";
-import { Text, View, Image } from "react-native";
+import { Text, View, Image, Pressable } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
 import styles from "./styles";
+import { useNavigation } from "@react-navigation/native";
 
 
 
 const CoinItem = ({ marketCoin }) => {
 
   // console.log(prop)
-  const { name, market_cap_rank, current_price, price_change_percentage_24h, symbol, market_cap, image } = marketCoin
+  const { id, name, market_cap_rank, current_price, price_change_percentage_24h, symbol, market_cap, image } = marketCoin
 
   // it is used to change the color of percentage icon according to percentage value
-  const percentageColor = price_change_percentage_24h > 0 ? '#ea3943' : '#16c784'
+      // while fetching data from api may be all data doesnot have price_change_percentage_24h if this is case then the app may crash ie adding or comndition to white
+
+  const percentageColor = price_change_percentage_24h > 0 ? '#ea3943' : '#16c784' || 'white'
 
   // this function used to reduce the market_cap price
   const normalizeMarketCap = (marketCap) => {
-    if (marketCap > 1_000_000_000_000) {
-      return `${Math.floor(marketCap / 1_000_000_000_000)} T`
-    } if (marketCap > 1_000_000_000) {
-      return `${Math.floor(marketCap / 1_000_000_000)} B`
-    } if (marketCap > 1_000_000) {
-      return `${Math.floor(marketCap / 1_000_000)} M`
-    } if (marketCap > 1_000) {
-      return `${Math.floor(marketCap / 1_000)} K`
+    // 1e12 = 1_000_000_000_000 trillion
+    if (marketCap > 1e12) {
+      return `${Math.floor(marketCap / 1e12)} T`
+    } if (marketCap > 1e9) {
+      return `${Math.floor(marketCap / 1e9)} B`
+    } if (marketCap > 1e6) {
+      return `${Math.floor(marketCap / 1e6)} M`
+    } if (marketCap > 1e3) {
+      return `${Math.floor(marketCap / 1e3)} K`
     }
     return marketCap
   }
 
+  const navigation = useNavigation()
+
   return (
-    <View style={styles.coinContainer}>
-      {/* <Image source={{ uri: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579'}}  */}
-      <Image source={{ uri: image }}
+    <Pressable style={styles.coinContainer} onPress={() => navigation.navigate('CoinDetailScreen', {coinId: id})}>
+      {/* <Image source={{ uri: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png'}}  */}
+        <Image source={{ uri: image}}
         // onError={handleImageError}
         style={styles.image} />
       <View>
@@ -45,7 +51,7 @@ const CoinItem = ({ marketCoin }) => {
             size={13}
             color={percentageColor}
             style={{ alignSelf: 'center', marginRight: 5 }} />
-          <Text style={{color: percentageColor}}>{price_change_percentage_24h.toFixed(2)}%</Text>
+          <Text style={{color: percentageColor}}>{price_change_percentage_24h?.toFixed(2)}%</Text>
         </View>
       </View>
       {/* this marginLeft auto will automativally set the view to the left corner */}
@@ -53,7 +59,7 @@ const CoinItem = ({ marketCoin }) => {
         <Text style={styles.title}>{current_price}</Text>
         <Text style={{ color: 'white' }}>MCap {normalizeMarketCap(market_cap)}</Text>
       </View>
-    </View>
+    </Pressable>
   )
 }
 

@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import HomeScreen from './src/screens/HomeScreen';
 import CoinDetailScreen from './src/screens/CoinDetailScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import Navigation from './src/navigation';
+import WatchListProvider from './src/Contexts/WatchListContext';
 
 export default function App() {
 
@@ -15,11 +18,20 @@ export default function App() {
   // console.log(imageError)
 //require('./assets/bitcoin.png')
   return (
-    <View style={styles.container}>
-      {/* <HomeScreen /> */}
-      <CoinDetailScreen />
-      <StatusBar style="light" />
-    </View>
+    <NavigationContainer theme={{
+      colors: {
+        background: '#121212'
+      }
+    }}>
+      <WatchListProvider>
+        <View style={styles.container}>
+          {/* <HomeScreen /> */}
+          {/* <CoinDetailScreen /> */}
+          <Navigation />
+          <StatusBar style="light" />
+        </View>
+      </WatchListProvider>
+    </NavigationContainer>
   );
 }
 
